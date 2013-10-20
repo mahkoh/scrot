@@ -8,7 +8,7 @@ CC = clang
 
 OBJECTS = help.o options.o display.o image.o utils.o
 
-DESTDIR ?= /usr/local/bin
+PREFIX ?= /usr/local
 
 all: options.o help.o display.o image.o utils.o
 	$(CC) $(CFLAGS) -o scrot scrot.c $(OBJECTS) $(LDFLAGS) 
@@ -34,4 +34,4 @@ clean:
 
 
 install: all
-	install scrot $(DESTDIR)/scrot
+	install scrot $(DESTDIR)$(PREFIX)/bin/scrot
