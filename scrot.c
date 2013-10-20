@@ -28,7 +28,6 @@ static void scrot_delay(void)
 	}
 }
 
-
 static void scrot_exec(Image const image, struct tm const *tm, char const *filename_im, char const *filename_thumb)
 {
 	char const *execstr = format_filename(opt->exec, tm, filename_im, filename_thumb, image);
@@ -67,7 +66,7 @@ static Image scrot_shoot(void)
 	return image_from_screen();
 }
 
-static Image create_thumbnail(Image image)
+static Image scrot_create_thumbnail(Image image)
 {
 	int cwidth = image_width(image);
 	int cheight = image_height(image);
@@ -121,7 +120,7 @@ int main(int argc, char **argv)
 	}
 
 	if (opt->thumb != 0) {
-		Image thumbnail = create_thumbnail(image);
+		Image thumbnail = scrot_create_thumbnail(image);
 		if (thumbnail == NULL) {
 			fprintf(stderr, "Unable to create scaled Image\n");
 			return 1;
