@@ -5,6 +5,6 @@
 
 #include "image.h"
 
-char *format_filename(char const *str, struct tm const *tm, char const *filename_im, char const *filename_thumb, Image im);
+char *util_fmt_str(char *str, struct tm *tm, char *path_im, char *path_thumb, Image im);
 
 #endif

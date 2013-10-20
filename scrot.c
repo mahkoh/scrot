@@ -28,9 +28,9 @@ static void scrot_delay(void)
 	}
 }
 
-static void scrot_exec(Image const image, struct tm const *tm, char const *filename_im, char const *filename_thumb)
+static void scrot_exec(Image image, struct tm *tm, char *path_im, char *path_thumb)
 {
-	char const *execstr = format_filename(opt->exec, tm, filename_im, filename_thumb, image);
+	char *execstr = util_fmt_str(opt->exec, tm, path_im, path_thumb, image);
 	system(execstr);
 	exit(EXIT_SUCCESS);
 }
@@ -110,12 +110,12 @@ int main(int argc, char **argv)
 	time(&t);
 	struct tm *tm = localtime(&t);
 
-	char *filename_image = format_filename(opt->output_file, tm, NULL, NULL, image);
-	char *filename_thumb = NULL;
+	char *path_image = util_fmt_str(opt->output_file, tm, NULL, NULL, image);
+	char *path_thumb = NULL;
 
-	bool error = image_save(image, filename_image);
+	bool error = image_save(image, path_image);
 	if (error) {
-		fprintf(stderr, "Saving to file %s failed\n", filename_image);
+		fprintf(stderr, "Saving to file %s failed\n", path_image);
 		return 1;
 	}
 
@@ -126,14 +126,14 @@ int main(int argc, char **argv)
 			return 1;
 		}
 
-		filename_thumb = format_filename(opt->thumb_file, tm, NULL, NULL, thumbnail);
-		error = image_save(thumbnail, filename_thumb);
+		path_thumb = util_fmt_str(opt->thumb_file, tm, NULL, NULL, thumbnail);
+		error = image_save(thumbnail, path_thumb);
 		if (error) {
-			fprintf(stderr, "Saving thumbnail %s failed\n", filename_thumb);
+			fprintf(stderr, "Saving thumbnail %s failed\n", path_thumb);
 			return 1;
 		}
 	}
 
 	if (opt->exec != NULL)
-		scrot_exec(image, tm, filename_image, filename_thumb);
+		scrot_exec(image, tm, path_image, path_thumb);
 }

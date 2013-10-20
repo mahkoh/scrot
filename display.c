@@ -24,6 +24,7 @@ void display_init(void)
 		exit(EXIT_FAILURE);
 	}
 	scr = ScreenOfDisplay(disp, DefaultScreen(disp));
+	root = RootWindow(disp, XScreenNumberOfScreen(scr));
 }
 
 int display_num_screens(void)
@@ -34,6 +35,7 @@ int display_num_screens(void)
 void display_open_screen(int num)
 {
 	scr = ScreenOfDisplay(disp, num);
+	root = RootWindow(disp, XScreenNumberOfScreen(scr));
 }
 
 static inline bool display_process_events(GC gc, int start_x, int start_y, struct Area *area)
@@ -88,13 +90,8 @@ static void display_area_sanitize(struct Area *area)
 		area->height = scr->height - area->y;
 }
 
-struct Area display_select_area()
+static GC display_create_gc(void)
 {
-	struct Area area = {0};
-
-	Cursor cursor = XCreateFontCursor(disp, XC_left_ptr);
-	Cursor cursor2 = XCreateFontCursor(disp, XC_lr_angle);
-
 	XGCValues gcval;
 	gcval.foreground = XWhitePixel(disp, 0);
 	gcval.function = GXxor;
@@ -102,10 +99,20 @@ struct Area display_select_area()
 	gcval.plane_mask = gcval.background ^ gcval.foreground;
 	gcval.subwindow_mode = IncludeInferiors;
 
-	root = RootWindow(disp, XScreenNumberOfScreen(scr));
-	GC gc = XCreateGC(disp, root, GCFunction | GCForeground | GCBackground | GCSubwindowMode, &gcval);
+	return XCreateGC(disp, root, GCFunction | GCForeground | GCBackground | GCSubwindowMode, &gcval);
+}
 
-	if (XGrabPointer(disp, root, False, ButtonReleaseMask, GrabModeAsync, GrabModeAsync, root, cursor, CurrentTime) != GrabSuccess) {
+struct Area display_select_area(void)
+{
+	struct Area area = {0};
+
+	Cursor cursor = XCreateFontCursor(disp, XC_left_ptr);
+	Cursor cursor2 = XCreateFontCursor(disp, XC_lr_angle);
+
+	GC gc = display_create_gc();
+
+	if (XGrabPointer(disp, root, False, ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
+				root, cursor, CurrentTime) != GrabSuccess) {
 		fprintf(stderr, "couldn't grab pointer: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
@@ -136,11 +143,10 @@ struct Area display_select_area()
 	return area;
 }
 
-struct Area display_select_window()
+struct Area display_select_window(void)
 {
 	struct Area area;
 
-	root = RootWindow(disp, XScreenNumberOfScreen(scr));
 	Cursor cursor = XCreateFontCursor(disp, XC_left_ptr);
 
 	if (XGrabPointer(disp, root, False, ButtonPressMask, GrabModeAsync,

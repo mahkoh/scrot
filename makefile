@@ -1,6 +1,4 @@
-CFLAGS = -Wall -Wextra -Wpedantic -Wformat -Wunused -Wno-unused-parameter -Wuninitialized \
-		-Wwrite-strings -Wstrict-prototypes -Wold-style-definition -Wredundant-decls -Wnested-externs \
-		-Werror -std=c99 -Wno-missing-field-initializers
+CFLAGS = -Wall -Wpedantic -Werror -std=c99
 
 LDFLAGS = -lX11 -lImlib2
 

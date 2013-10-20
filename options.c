@@ -1,3 +1,5 @@
+#define	_GNU_SOURCE
+
 #include <getopt.h>
 #include <stdbool.h>
 #include <malloc.h>
@@ -7,9 +9,9 @@
 #include "options.h"
 #include "help.h"
 
-struct Options const *opt;
+struct Options *opt;
 
-static char *options_name_thumb(char const *name)
+static char *options_name_thumb(char *name)
 {
 	char *thumb = malloc(strlen(name) + sizeof("-thumb"));
 	char *dot = strrchr(name, '.');
@@ -64,8 +66,8 @@ void options_init(int argc, char **argv)
 
 	tmp_opt->quality = 75;
 
-	char const *stropts = "bcd:e:hmq:swt:v+:";
-	struct option const lopts[] = {
+	char *stropts = "bcd:e:hmq:swt:v+:";
+	struct option lopts[] = {
 		// actions
 		{"help", 0, 0, 'h'},                  // okay
 		{"version", 0, 0, 'v'},               // okay
@@ -151,8 +153,8 @@ void options_init(int argc, char **argv)
 	optind = 1;
 
 	if (tmp_opt->output_file == NULL) {
-		tmp_opt->output_file = "%Y-%m-%d-%H%M%S_$wx$h_scrot.png";
-		tmp_opt->thumb_file = "%Y-%m-%d-%H%M%S_$wx$h_scrot-thumb.png";
+		tmp_opt->output_file = strdup("%Y-%m-%d-%H%M%S_$wx$h_scrot.png");
+		tmp_opt->thumb_file = strdup("%Y-%m-%d-%H%M%S_$wx$h_scrot-thumb.png");
 	}
 
 	opt = tmp_opt;

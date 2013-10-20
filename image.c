@@ -5,7 +5,7 @@
 #include "display_X11.h"
 #include "image.h"
 
-void image_init()
+void image_init(void)
 {
 	Visual *vis = DefaultVisual(disp, XScreenNumberOfScreen(scr));
 	Colormap cm = DefaultColormap(disp, XScreenNumberOfScreen(scr));
@@ -17,41 +17,26 @@ void image_init()
 	imlib_context_set_operation(IMLIB_OP_COPY);
 }
 
-Image image_from_screen()
+Image image_from_screen(void)
 {
 	Window root = RootWindow(disp, XScreenNumberOfScreen(scr));
 	imlib_context_set_drawable(root);
 	return imlib_create_image_from_drawable(0, 0, 0, scr->width, scr->height, 1);
 }
 
-int image_width(Image const image)
+int image_width(Image image)
 {
 	imlib_context_set_image(image);
 	return imlib_image_get_width();
 }
 
-int image_height(Image const image)
+int image_height(Image image)
 {
 	imlib_context_set_image(image);
 	return imlib_image_get_height();
 }
 
-Image image_new(int width, int height)
-{
-	Imlib_Image image = imlib_create_image(width, height);
-	imlib_context_set_image(image);
-	imlib_context_set_color(255, 0, 0, 0);
-	imlib_image_fill_rectangle(0, 0, width, height);
-
-	imlib_context_set_anti_alias(0);
-	imlib_context_set_dither(1);
-	imlib_context_set_blend(0);
-	imlib_context_set_angle(0);
-
-	return image;
-}
-
-Image image_concat(Image const images[], int count)
+Image image_concat(Image images[], int count)
 {
 	int total_width = 0;
 	int max_height = 0;
@@ -92,9 +77,9 @@ Image image_from_area(struct Area *area)
 	return imlib_create_image_from_drawable(0, area->x, area->y, area->width, area->height, 1);
 }
 
-bool image_save(Image image, char const *filename)
+bool image_save(Image image, char *filename)
 {
-	char const *tmp = strrchr(filename, '.');
+	char *tmp = strrchr(filename, '.');
 	if (tmp) {
 		imlib_image_set_format(tmp + 1);
 	}
@@ -108,7 +93,6 @@ bool image_save(Image image, char const *filename)
 
 Image image_scale(Image image, int cwidth, int cheight, int twidth, int theight)
 {
-
 	imlib_context_set_image(image);
 	imlib_context_set_anti_alias(1);
 	return imlib_create_cropped_scaled_image(0, 0, cwidth, cheight, twidth, theight);
@@ -118,4 +102,10 @@ void image_set_quality(Image image, int quality)
 {
 	imlib_context_set_image(image);
 	imlib_image_attach_data_value("quality", NULL, quality, NULL);
+}
+
+char *image_format(Image image)
+{
+	imlib_context_set_image(image);
+	return imlib_image_format();
 }
