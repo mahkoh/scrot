@@ -7,8 +7,8 @@
 
 typedef void * Image;
 
-void image_init();
-Image image_from_screen();
+void image_init(void);
+Image image_from_screen(void);
 Image image_from_area(struct Area *area);
 Image image_concat(Image const images[], int count);
 Image image_scale(Image image, int cwidth, int cheight, int twidth, int theight);
