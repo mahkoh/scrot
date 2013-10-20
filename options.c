@@ -1,5 +1,3 @@
-#define	_GNU_SOURCE
-
 #include <getopt.h>
 #include <stdbool.h>
 #include <malloc.h>
@@ -153,8 +151,8 @@ void options_init(int argc, char **argv)
 	optind = 1;
 
 	if (tmp_opt->output_file == NULL) {
-		tmp_opt->output_file = strdup("%Y-%m-%d-%H%M%S_$wx$h_scrot.png");
-		tmp_opt->thumb_file = strdup("%Y-%m-%d-%H%M%S_$wx$h_scrot-thumb.png");
+		tmp_opt->output_file = "%Y-%m-%d-%H%M%S_$wx$h_scrot.png";
+		tmp_opt->thumb_file = "%Y-%m-%d-%H%M%S_$wx$h_scrot-thumb.png";
 	}
 
 	opt = tmp_opt;

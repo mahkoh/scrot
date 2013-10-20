@@ -1,5 +1,3 @@
-#define	_GNU_SOURCE
-
 #include <sys/stat.h>
 #include <string.h>
 #include <stdio.h>
@@ -10,8 +8,8 @@
 
 static char *util_fmt_int(char *fmt, int n)
 {      
-	char *tmp;
-	asprintf(&tmp, fmt, n);
+	static char tmp[32];
+	sprintf(tmp, fmt, n);
 	return tmp;
 }
 
