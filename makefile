@@ -8,6 +8,8 @@ CC = clang
 
 OBJECTS = help.o options.o display.o image.o utils.o
 
+DESTDIR ?= /usr/local/bin
+
 all: options.o help.o display.o image.o utils.o
 	$(CC) $(CFLAGS) -o scrot scrot.c $(OBJECTS) $(LDFLAGS) 
 
@@ -29,3 +31,7 @@ image.o:
 
 clean:
 	rm -f *.png *.o scrot
+
+
+install: all
+	install scrot $(DESTDIR)/scrot
