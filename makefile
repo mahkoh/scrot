@@ -34,4 +34,4 @@ clean:
 
 
 install: all
-	install scrot $(DESTDIR)$(PREFIX)/bin/scrot
+	install -D scrot $(DESTDIR)$(PREFIX)/bin/scrot
