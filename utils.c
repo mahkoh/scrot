@@ -110,6 +110,6 @@ void util_error(char *fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	vfprintf(stderr, "Saving thumbnail %s failed\n", args);
+	vfprintf(stderr, fmt, args);
 	exit(EXIT_FAILURE);
 }
