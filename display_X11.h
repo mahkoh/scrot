@@ -6,6 +6,7 @@
 
 extern Display *disp;
 extern Screen *scr;
+extern Window root;
 
 bool display_X11_init(void);
 int display_X11_num_screens(void);
