@@ -1,7 +1,7 @@
-#include <stdio.h>
 #include <sys/select.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <malloc.h>
 #include <errno.h>
 #include <string.h>
 #include <X11/Xlib.h>
@@ -16,15 +16,14 @@ Display *disp;
 Screen *scr;
 Window root;
 
-void display_X11_init(void)
+bool display_X11_init(void)
 {
 	disp = XOpenDisplay(NULL);
-	if (disp == NULL) {
-		fprintf(stderr, "Can't open X display.\n");
-		exit(EXIT_FAILURE);
-	}
+	if (disp == NULL)
+		return false;
 	scr = ScreenOfDisplay(disp, DefaultScreen(disp));
 	root = RootWindow(disp, XScreenNumberOfScreen(scr));
+	return true;
 }
 
 int display_X11_num_screens(void)
@@ -104,9 +103,9 @@ static GC display_X11_create_gc(void)
 	return XCreateGC(disp, root, GCFunction | GCForeground | GCBackground | GCSubwindowMode, &gcval);
 }
 
-struct Area display_X11_select_area(void)
+struct Area *display_X11_select_area(void)
 {
-	struct Area area = {0};
+	struct Area *area = calloc(1, sizeof(*area));
 
 	Cursor cursor = XCreateFontCursor(disp, XC_left_ptr);
 	Cursor cursor2 = XCreateFontCursor(disp, XC_lr_angle);
@@ -114,10 +113,8 @@ struct Area display_X11_select_area(void)
 	GC gc = display_X11_create_gc();
 
 	if (XGrabPointer(disp, root, False, ButtonPressMask, GrabModeAsync, GrabModeAsync,
-				root, cursor, CurrentTime) != GrabSuccess) {
-		fprintf(stderr, "couldn't grab pointer: %s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
+				root, cursor, CurrentTime) != GrabSuccess)
+		return NULL;
 
 	XEvent ev = {0};
 	while (ev.type != ButtonPress)
@@ -127,7 +124,7 @@ struct Area display_X11_select_area(void)
 	int start_y = ev.xbutton.y;
 	XChangeActivePointerGrab(disp, PointerMotionMask | ButtonReleaseMask, cursor2, CurrentTime);
 
-	while (display_X11_process_events(gc, start_x, start_y, &area)) {
+	while (display_X11_process_events(gc, start_x, start_y, area)) {
 		fd_set fdset;
 		FD_ZERO(&fdset);
 		FD_SET(ConnectionNumber(disp), &fdset);
@@ -140,22 +137,20 @@ struct Area display_X11_select_area(void)
 	XFreeGC(disp, gc);
 	XSync(disp, True);
 
-	display_X11_area_sanitize(&area);
+	display_X11_area_sanitize(area);
 
 	return area;
 }
 
-struct Area display_X11_select_window(void)
+struct Area *display_X11_select_window(void)
 {
-	struct Area area;
+	struct Area *area = calloc(1, sizeof(*area));
 
 	Cursor cursor = XCreateFontCursor(disp, XC_left_ptr);
 
 	if (XGrabPointer(disp, root, False, ButtonPressMask, GrabModeAsync,
-				GrabModeAsync, root, cursor, CurrentTime) != GrabSuccess) {
-		fprintf(stderr, "couldn't grab pointer: %s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
+				GrabModeAsync, root, cursor, CurrentTime) != GrabSuccess)
+		return NULL;
 
 	XEvent ev = {0};
 	while (ev.type != ButtonPress)
@@ -168,12 +163,12 @@ struct Area display_X11_select_window(void)
 	Window target = ev.xbutton.subwindow;
 	XWindowAttributes attr;
 	XGetWindowAttributes(disp, target, &attr);
-	area.width = attr.width;
-	area.height = attr.height;
+	area->width = attr.width;
+	area->height = attr.height;
 	Window child;
-	XTranslateCoordinates(disp, target, root, 0, 0, &area.x, &area.y, &child);
+	XTranslateCoordinates(disp, target, root, 0, 0, &area->x, &area->y, &child);
 
-	display_X11_area_sanitize(&area);
+	display_X11_area_sanitize(area);
 
 	return area;
 }

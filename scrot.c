@@ -53,12 +53,14 @@ static Image scrot_shoot_all_screens(void)
 static Image scrot_shoot(void)
 {
 	if (opt->select || opt->window) {
-		struct Area area;
+		struct Area *area;
 		if (opt->select)
 			area = display_select_area();
 		else
 			area = display_select_window();
-		return image_from_area(&area);
+		if (area == NULL)
+			util_error("Couldn't select area\n");
+		return image_from_area(area);
 	}
 	scrot_delay();
 	if (opt->multidisp)
@@ -95,7 +97,8 @@ static Image scrot_create_thumbnail(Image image)
 int main(int argc, char **argv)
 {
 	options_init(argc, argv);
-	display_init();
+	if(!display_init())
+		util_error("Can't open display.\n");
 	image_init();
 
 	Image image = scrot_shoot();

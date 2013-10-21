@@ -1,7 +1,6 @@
 #include <Imlib2.h>
 #include <string.h>
 
-#include "display_X11.h"
 #include "image.h"
 #include "image_X11.h"
 

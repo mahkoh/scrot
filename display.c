@@ -2,9 +2,9 @@
 #include "display.h"
 #include "display_X11.h"
 
-void display_init(void)
+bool display_init(void)
 {
-	display_X11_init();
+	return display_X11_init();
 }
 
 int display_num_screens(void)
@@ -17,12 +17,12 @@ void display_open_screen(int num)
 	display_X11_open_screen(num);
 }
 
-struct Area display_select_area(void)
+struct Area *display_select_area(void)
 {
 	return display_X11_select_area();
 }
 
-struct Area display_select_window(void)
+struct Area *display_select_window(void)
 {
 	return display_X11_select_window();
 }
