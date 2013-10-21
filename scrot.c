@@ -26,13 +26,6 @@ static void scrot_delay(void)
 	printf("0.\n");
 }
 
-static void scrot_exec(Image image, struct tm *tm, char *path_im, char *path_thumb)
-{
-	char *execstr = util_fmt_str(opt->exec, tm, path_im, path_thumb, image);
-	system(execstr);
-	exit(EXIT_SUCCESS);
-}
-
 static Image scrot_shoot_all_screens(void)
 {
 	int screens = display_num_screens();
@@ -58,6 +51,7 @@ static Image scrot_shoot(void)
 			area = display_select_window();
 		if (area == NULL)
 			util_error("Couldn't select area\n");
+		scrot_delay();
 		return image_from_area(area);
 	}
 	scrot_delay();
@@ -127,6 +121,8 @@ int main(int argc, char **argv)
 			util_error("Saving thumbnail %s failed\n", path_thumb);
 	}
 
-	if (opt->exec != NULL)
-		scrot_exec(image, tm, path_image, path_thumb);
+	if (opt->exec != NULL) {
+		char *execstr = util_fmt_str(opt->exec, tm, path_image, path_thumb, image);
+		system(execstr);
+	}
 }
