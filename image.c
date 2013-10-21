@@ -1,27 +1,23 @@
-#include <X11/Xlib.h>
 #include <Imlib2.h>
 #include <string.h>
 
 #include "display_X11.h"
 #include "image.h"
+#include "image_X11.h"
 
 void image_init(void)
 {
-	Visual *vis = DefaultVisual(disp, XScreenNumberOfScreen(scr));
-	Colormap cm = DefaultColormap(disp, XScreenNumberOfScreen(scr));
-
-	imlib_context_set_display(disp);
-	imlib_context_set_visual(vis);
-	imlib_context_set_colormap(cm);
-	imlib_context_set_color_modifier(NULL);
-	imlib_context_set_operation(IMLIB_OP_COPY);
+	image_X11_init();
 }
 
 Image image_from_screen(void)
 {
-	Window root = RootWindow(disp, XScreenNumberOfScreen(scr));
-	imlib_context_set_drawable(root);
-	return imlib_create_image_from_drawable(0, 0, 0, scr->width, scr->height, 1);
+	return image_X11_from_screen();
+}
+
+Image image_from_area(struct Area *area)
+{
+	return image_X11_from_area(area);
 }
 
 int image_width(Image image)
@@ -68,13 +64,6 @@ Image image_concat(Image images[], int count)
 	}
 
 	return ret;
-}
-
-Image image_from_area(struct Area *area)
-{
-	Window root = RootWindow(disp, XScreenNumberOfScreen(scr));
-	imlib_context_set_drawable(root);
-	return imlib_create_image_from_drawable(0, area->x, area->y, area->width, area->height, 1);
 }
 
 bool image_save(Image image, char *filename)
