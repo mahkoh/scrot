@@ -1,6 +1,8 @@
 #include <sys/stat.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <malloc.h>
 
 #include "utils.h"
@@ -102,4 +104,12 @@ char *util_fmt_str(char *str, struct tm *tm, char *path_im, char *path_thumb, Im
 	}
 
 	return ret;
+}
+
+void util_error(char *fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	vfprintf(stderr, "Saving thumbnail %s failed\n", args);
+	exit(EXIT_FAILURE);
 }

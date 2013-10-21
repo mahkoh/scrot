@@ -99,10 +99,8 @@ int main(int argc, char **argv)
 	image_init();
 
 	Image image = scrot_shoot();
-	if (image == NULL) {
-		fprintf(stderr, "no image grabbed\n");
-		return 1;
-	}
+	if (image == NULL)
+		util_error("no image grabbed\n");
 
 	image_set_quality(image, opt->quality);
 
@@ -114,24 +112,18 @@ int main(int argc, char **argv)
 	char *path_thumb = NULL;
 
 	bool error = image_save(image, path_image);
-	if (error) {
-		fprintf(stderr, "Saving to file %s failed\n", path_image);
-		return 1;
-	}
+	if (error)
+		util_error("Saving to file %s failed\n", path_image);
 
 	if (opt->thumb != 0) {
 		Image thumbnail = scrot_create_thumbnail(image);
-		if (thumbnail == NULL) {
-			fprintf(stderr, "Unable to create scaled Image\n");
-			return 1;
-		}
+		if (thumbnail == NULL)
+			util_error("Unable to create scaled Image\n");
 
 		path_thumb = util_fmt_str(opt->thumb_file, tm, NULL, NULL, thumbnail);
 		error = image_save(thumbnail, path_thumb);
-		if (error) {
-			fprintf(stderr, "Saving thumbnail %s failed\n", path_thumb);
-			return 1;
-		}
+		if (error)
+			util_error("Saving thumbnail %s failed\n");
 	}
 
 	if (opt->exec != NULL)
