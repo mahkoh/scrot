@@ -11,21 +11,19 @@
 
 static void scrot_delay(void)
 {
-	if (opt->delay > 0) {
-		if (opt->countdown) {
-			printf("Taking shot in %d.. ", opt->delay);
-			fflush(stdout);
-			sleep(1);
-			for (int i = opt->delay - 1; i > 0; i--) {
-				printf("%d.. ", i);
-				fflush(stdout);
-				sleep(1);
-			}
-			printf("0.\n");
-		} else {
-			sleep(opt->delay);
-		}
+	if (opt->delay < 1)
+		return;
+	if (!opt->countdown) {
+		sleep(opt->delay);
+		return;
 	}
+	printf("Taking shot in ");
+	for (int i = opt->delay; i > 0; i--) {
+		printf("%d.. ", i);
+		fflush(stdout);
+		sleep(1);
+	}
+	printf("0.\n");
 }
 
 static void scrot_exec(Image image, struct tm *tm, char *path_im, char *path_thumb)
@@ -126,7 +124,7 @@ int main(int argc, char **argv)
 		path_thumb = util_fmt_str(opt->thumb_file, tm, NULL, NULL, thumbnail);
 		error = image_save(thumbnail, path_thumb);
 		if (error)
-			util_error("Saving thumbnail %s failed\n");
+			util_error("Saving thumbnail %s failed\n", path_thumb);
 	}
 
 	if (opt->exec != NULL)
