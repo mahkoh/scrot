@@ -12,6 +12,10 @@
 #include "display_X11.h"
 #include "options.h"
 
+#ifndef min
+#define min(x,y) (((x)<(y))?(x):(y))
+#endif
+
 Display *disp;
 Screen *scr;
 Window root;
@@ -47,19 +51,10 @@ static inline bool display_X11_process_events(GC gc, int start_x, int start_y, s
 		case MotionNotify:
 			XDrawRectangle(disp, root, gc, area->x, area->y, area->width, area->height);
 
-			area->x = start_x;
-			area->y = start_y;
-			area->width = ev.xmotion.x - area->x;
-			area->height = ev.xmotion.y - area->y;
-
-			if (area->width < 0) {
-				area->x += area->width;
-				area->width = 0 - area->width;
-			}
-			if (area->height < 0) {
-				area->y += area->height;
-				area->height = 0 - area->height;
-			}
+			area->x = min(start_x, ev.xmotion.x);
+			area->y = min(start_y, ev.xmotion.y);
+			area->width = abs(ev.xmotion.x - start_x);
+			area->height = abs(ev.xmotion.y - start_y);
 
 			XDrawRectangle(disp, root, gc, area->x, area->y, area->width, area->height);
 			XFlush(disp);
