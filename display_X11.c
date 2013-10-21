@@ -66,8 +66,10 @@ static inline bool display_X11_process_events(GC gc, int start_x, int start_y, s
 			XFlush(disp);
 			break;
 		case ButtonRelease:
-			XDrawRectangle(disp, root, gc, area->x, area->y, area->width, area->height);
-			return false;
+			if (area->width > 5 || area->height > 5) {
+				XDrawRectangle(disp, root, gc, area->x, area->y, area->width, area->height);
+				return false;
+			}
 		}
 	}
 
@@ -111,14 +113,14 @@ struct Area display_X11_select_area(void)
 
 	GC gc = display_X11_create_gc();
 
-	if (XGrabPointer(disp, root, False, ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
+	if (XGrabPointer(disp, root, False, ButtonPressMask, GrabModeAsync, GrabModeAsync,
 				root, cursor, CurrentTime) != GrabSuccess) {
 		fprintf(stderr, "couldn't grab pointer: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
 	XEvent ev = {0};
-	while (ev.type != ButtonRelease)
+	while (ev.type != ButtonPress)
 		XNextEvent(disp, &ev);
 
 	int start_x = ev.xbutton.x;
