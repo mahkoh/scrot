@@ -4,7 +4,7 @@
 #include "help.h"
 
 #define PACKAGE "scrot"
-#define VERSION "1"
+#define VERSION "0.9.0"
 
 void help_show_version(void)
 {
@@ -14,7 +14,8 @@ void help_show_version(void)
 
 void help_show_mini_usage(void)
 {
-	printf("Usage : " PACKAGE " [OPTIONS]... FILE\nUse " PACKAGE " --help for detailed usage information\n");
+	printf("Usage : " PACKAGE " [OPTIONS]... FILE\n"
+	       "Use " PACKAGE " --help for detailed usage information\n");
 	exit(EXIT_SUCCESS);
 }
 
@@ -63,10 +64,11 @@ void help_show_usage(void)
 			"                  \\n prints a newline (ignored when used in the filename)\n"
 			"  Example:\n" "          " PACKAGE
 			" '%%Y-%%m-%%d_$wx$h_scrot.png' -e 'mv $f ~/images/shots/'\n"
-			"          Creates a file called something like 2000-10-30_2560x1024_scrot.png\n"
+			"          Creates a file called something like 2013-10-12_1024x768_scrot.png\n"
 			"          and moves it to your images directory.\n" "\n"
-			"This program is free software see the file COPYING for licensing info.\n"
+			"This program is free software. See the file COPYING for licensing info.\n"
 			"Copyright Tom Gilbert 2000\n"
-			"Email bugs to <scrot_sucks@linuxbrit.co.uk>\n");
+			"Copyright mahkoh 2013\n"
+			"Report bugs at https://github.com/mahkoh/scrot/issues\n");
 	exit(EXIT_SUCCESS);
 }
