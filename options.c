@@ -139,7 +139,7 @@ void options_init(int argc, char **argv)
 			if (tmp_opt->output_file == NULL) {
 				tmp_opt->output_file = argv[optind++];
 				if (tmp_opt->thumb) {
-					tmp_opt->thumb_file = options_name_thumb(opt->output_file);
+					tmp_opt->thumb_file = options_name_thumb(tmp_opt->output_file);
 				}
 			} else {
 				fprintf(stderr, "unrecognised option %s\n", argv[optind++]);

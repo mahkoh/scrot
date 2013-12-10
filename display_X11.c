@@ -100,8 +100,6 @@ static GC display_X11_create_gc(void)
 
 struct Area *display_X11_select_area(void)
 {
-	struct Area *area = calloc(1, sizeof(*area));
-
 	Cursor cursor = XCreateFontCursor(disp, XC_left_ptr);
 	Cursor cursor2 = XCreateFontCursor(disp, XC_lr_angle);
 
@@ -118,6 +116,8 @@ struct Area *display_X11_select_area(void)
 	int start_x = ev.xbutton.x;
 	int start_y = ev.xbutton.y;
 	XChangeActivePointerGrab(disp, PointerMotionMask | ButtonReleaseMask, cursor2, CurrentTime);
+
+	struct Area *area = calloc(1, sizeof(*area));
 
 	while (display_X11_process_events(gc, start_x, start_y, area)) {
 		fd_set fdset;
@@ -139,8 +139,6 @@ struct Area *display_X11_select_area(void)
 
 struct Area *display_X11_select_window(void)
 {
-	struct Area *area = calloc(1, sizeof(*area));
-
 	Cursor cursor = XCreateFontCursor(disp, XC_left_ptr);
 
 	if (XGrabPointer(disp, root, False, ButtonPressMask, GrabModeAsync,
@@ -154,6 +152,8 @@ struct Area *display_X11_select_window(void)
 	XUngrabPointer(disp, CurrentTime);
 	XFreeCursor(disp, cursor);
 	XSync(disp, True);
+
+	struct Area *area = calloc(1, sizeof(*area));
 
 	Window target = ev.xbutton.subwindow;
 	XWindowAttributes attr;
