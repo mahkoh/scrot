@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wpedantic -Werror -std=c11
+CFLAGS = -Wall -pedantic -Werror -std=c99
 
 LDFLAGS = -lX11 -lImlib2
 

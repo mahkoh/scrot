@@ -6,20 +6,20 @@
 #define PACKAGE "scrot"
 #define VERSION "0.9.0"
 
-_Noreturn void help_show_version(void)
+void help_show_version(void)
 {
 	printf(PACKAGE " version " VERSION "\n");
 	exit(EXIT_SUCCESS);
 }
 
-_Noreturn void help_show_mini_usage(void)
+void help_show_mini_usage(void)
 {
 	printf("Usage : " PACKAGE " [OPTIONS]... FILE\n"
 	       "Use " PACKAGE " --help for detailed usage information\n");
 	exit(EXIT_SUCCESS);
 }
 
-_Noreturn void help_show_usage(void)
+void help_show_usage(void)
 {
 	fprintf(stdout,
 			"Usage : " PACKAGE " [OPTIONS]... [FILE]\n"
