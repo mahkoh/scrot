@@ -18,7 +18,6 @@
 
 Display *disp;
 Screen *scr;
-Window root;
 
 bool display_X11_init(void)
 {
@@ -26,7 +25,6 @@ bool display_X11_init(void)
 	if (disp == NULL)
 		return false;
 	scr = ScreenOfDisplay(disp, DefaultScreen(disp));
-	root = RootWindow(disp, XScreenNumberOfScreen(scr));
 	return true;
 }
 
@@ -38,7 +36,6 @@ int display_X11_num_screens(void)
 void display_X11_open_screen(int num)
 {
 	scr = ScreenOfDisplay(disp, num);
-	root = RootWindow(disp, XScreenNumberOfScreen(scr));
 }
 
 static inline bool display_X11_process_events(GC gc, int start_x, int start_y, struct Area *area)
@@ -49,19 +46,19 @@ static inline bool display_X11_process_events(GC gc, int start_x, int start_y, s
 		XNextEvent(disp, &ev);
 		switch (ev.type) {
 		case MotionNotify:
-			XDrawRectangle(disp, root, gc, area->x, area->y, area->width, area->height);
+			XDrawRectangle(disp, scr->root, gc, area->x, area->y, area->width, area->height);
 
 			area->x = min(start_x, ev.xmotion.x);
 			area->y = min(start_y, ev.xmotion.y);
 			area->width = abs(ev.xmotion.x - start_x);
 			area->height = abs(ev.xmotion.y - start_y);
 
-			XDrawRectangle(disp, root, gc, area->x, area->y, area->width, area->height);
+			XDrawRectangle(disp, scr->root, gc, area->x, area->y, area->width, area->height);
 			XFlush(disp);
 			break;
 		case ButtonRelease:
 			if (area->width > 5 || area->height > 5) {
-				XDrawRectangle(disp, root, gc, area->x, area->y, area->width, area->height);
+				XDrawRectangle(disp, scr->root, gc, area->x, area->y, area->width, area->height);
 				return false;
 			}
 		}
@@ -95,7 +92,7 @@ static GC display_X11_create_gc(void)
 	gcval.plane_mask = gcval.background ^ gcval.foreground;
 	gcval.subwindow_mode = IncludeInferiors;
 
-	return XCreateGC(disp, root, GCFunction | GCForeground | GCBackground | GCSubwindowMode, &gcval);
+	return XCreateGC(disp, scr->root, GCFunction | GCForeground | GCBackground | GCSubwindowMode, &gcval);
 }
 
 struct Area *display_X11_select_area(void)
@@ -105,8 +102,8 @@ struct Area *display_X11_select_area(void)
 
 	GC gc = display_X11_create_gc();
 
-	if (XGrabPointer(disp, root, False, ButtonPressMask, GrabModeAsync, GrabModeAsync,
-				root, cursor, CurrentTime) != GrabSuccess)
+	if (XGrabPointer(disp, scr->root, False, ButtonPressMask, GrabModeAsync, GrabModeAsync,
+				scr->root, cursor, CurrentTime) != GrabSuccess)
 		return NULL;
 
 	XEvent ev = {0};
@@ -141,8 +138,8 @@ struct Area *display_X11_select_window(void)
 {
 	Cursor cursor = XCreateFontCursor(disp, XC_left_ptr);
 
-	if (XGrabPointer(disp, root, False, ButtonPressMask, GrabModeAsync,
-				GrabModeAsync, root, cursor, CurrentTime) != GrabSuccess)
+	if (XGrabPointer(disp, scr->root, False, ButtonPressMask, GrabModeAsync,
+				GrabModeAsync, scr->root, cursor, CurrentTime) != GrabSuccess)
 		return NULL;
 
 	XEvent ev = {0};
@@ -161,7 +158,7 @@ struct Area *display_X11_select_window(void)
 	area->width = attr.width;
 	area->height = attr.height;
 	Window child;
-	XTranslateCoordinates(disp, target, root, 0, 0, &area->x, &area->y, &child);
+	XTranslateCoordinates(disp, target, scr->root, 0, 0, &area->x, &area->y, &child);
 
 	display_X11_area_sanitize(area);
 

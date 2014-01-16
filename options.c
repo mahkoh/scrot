@@ -9,12 +9,12 @@
 
 struct Options *opt;
 
-static char *options_name_thumb(char *name)
+static char *options_name_thumb(const char *name)
 {
 	char *thumb = malloc(strlen(name) + sizeof("-thumb"));
 	char *dot = strrchr(name, '.');
 	if (dot != NULL) {
-		strncpy(thumb, name, dot - name);
+		strncpy(thumb, name, (size_t)(dot - name));
 		strcat(thumb, "-thumb");
 		strcat(thumb, dot);
 	} else {
@@ -23,15 +23,15 @@ static char *options_name_thumb(char *name)
 	return thumb;
 }
 
-static void options_init_thumbnail(struct Options *tmp_opt, char *optarg)
+static void options_init_thumbnail(struct Options *tmp_opt, char *arg)
 {
-	if (strchr(optarg, 'x')) {
+	if (strchr(arg, 'x')) {
 		// We want to specify the geometry
-		char *tok = strtok(optarg, "x");
+		char *tok = strtok(arg, "x");
 		tmp_opt->thumb_width = atoi(tok);
 		tok = strtok(NULL, "x");
 		if (tok) {
-			tmp_opt->thumb_width = atoi(optarg);
+			tmp_opt->thumb_width = atoi(arg);
 			tmp_opt->thumb_height = atoi(tok);
 
 			if (tmp_opt->thumb_width < 0) {
@@ -49,7 +49,7 @@ static void options_init_thumbnail(struct Options *tmp_opt, char *optarg)
 			}
 		}
 	} else {
-		tmp_opt->thumb = atoi(optarg);
+		tmp_opt->thumb = atoi(arg);
 		if (tmp_opt->thumb < 1) {
 			tmp_opt->thumb = 1;
 		} else if (tmp_opt->thumb > 100) {
@@ -64,7 +64,7 @@ void options_init(int argc, char **argv)
 
 	tmp_opt->quality = 75;
 
-	char *stropts = "bcd:e:hmq:swt:v+:";
+	const char *stropts = "bcd:e:hmq:swt:v+:";
 	struct option lopts[] = {
 		// actions
 		{"help", 0, 0, 'h'},                  // okay

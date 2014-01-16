@@ -53,7 +53,7 @@ static char *util_fmt_char(char c, char *path_im, char *path_thumb, Image im)
 	}
 }
 
-char *util_fmt_str(char *str, struct tm *tm, char *path_im, char *path_thumb, Image im)
+char *util_fmt_str(const char *str, struct tm *tm, char *path_im, char *path_thumb, Image im)
 {
 	size_t buff_len = 4092;
 
