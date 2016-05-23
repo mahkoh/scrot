@@ -59,6 +59,10 @@ static inline bool display_X11_process_events(GC gc, int start_x, int start_y, s
 		case ButtonRelease:
 			if (area->width > 5 || area->height > 5) {
 				XDrawRectangle(disp, scr->root, gc, area->x, area->y, area->width, area->height);
+				area->x += 1;
+				area->y += 1;
+				area->width -= 2;
+				area->height -= 2;
 				return false;
 			}
 		}

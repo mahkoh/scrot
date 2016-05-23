@@ -1,5 +1,5 @@
 pkgname=scrot-git
-pkgver=0.9.0
+pkgver=0.9.1
 pkgrel=1
 pkgdesc="A simple command-line screenshot utility for X"
 arch=('i686' 'x86_64')
